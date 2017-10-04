@@ -26,7 +26,7 @@ class UudifierTest extends TestCase
 
         for ($i = 0; $i < 100; $i++) {
             $id = rand(1, 10000000);
-            $decoded = $generator->decode('foo', $generator->encode('foo', $id));
+            $decoded = $generator->decode($generator->encode('foo', $id));
             $this->assertEquals($id, $decoded);
         }
     }
@@ -55,18 +55,34 @@ class UudifierTest extends TestCase
     /**
      * @test
      */
-    public function itThrowsAnExceptionWhenDecodingWithADifferentPrefix()
+    public function uuidWithCorrectPrefixIsValid()
     {
-        $this->expectException(InvalidArgumentException::class);
+        $generator = new Uuidifier();
+        $uuid = $generator->encode('foo', 1);
+        $this->assertTrue($generator->isValid('foo', $uuid));
+    }
 
+    /**
+     * @test
+     */
+    public function uuidWithDifferentPrefixIsInvalid()
+    {
+        $generator = new Uuidifier();
+        $uuid = $generator->encode('foo', 1);
+        $this->assertFalse($generator->isValid('bar', $uuid));
+    }
+
+    /**
+     * @test
+     */
+    public function uuidWithDifferentNumberIsInvalid()
+    {
         $generator = new Uuidifier();
         $uuid1 = $generator->encode('foo', 1);
         $uuid2 = Uuid::fromString(rtrim($uuid1, '1') . '2');
 
-        $realUuid2 = $generator->encode('foo', 2);
-        $this->assertNotEquals($realUuid2, $uuid1);
-
-        $decodedUuid2 = $generator->decode('foo', $uuid2);
-        $decodedRealUuid2 = $generator->decode('foo', $realUuid2);
+        $this->assertNotEquals($uuid1, $uuid2);
+        $this->assertTrue($generator->isValid('foo', $uuid1));
+        $this->assertFalse($generator->isValid('foo', $uuid2));
     }
 }

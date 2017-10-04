@@ -54,11 +54,10 @@ class Uuidifier
     }
 
     /**
-     * @param string $prefix
      * @param UuidInterface $uuid
      * @return int
      */
-    public function decode($prefix, UuidInterface $uuid)
+    public function decode(UuidInterface $uuid)
     {
         if ($uuid->getVersion() != $this->version) {
             throw new InvalidArgumentException('Can only decode version ' . $this->version . ' uuids');
@@ -67,13 +66,20 @@ class Uuidifier
         $length = hexdec($uuid->getClockSeqLowHex()[0]);
         $hex = substr($uuid->getHex(), 32 - $length, $length);
 
-        $id = hexdec($hex);
-        $encoded = $this->encode($prefix, $id);
+        return hexdec($hex);
+    }
 
-        if (!$uuid->equals($encoded)) {
-            throw new InvalidArgumentException('Uuid was encoded with a different prefix');
-        }
+    /**
+     * @param string $prefix
+     * @param UuidInterface $uuid
+     *
+     * @return bool
+     */
+    public function isValid($prefix, UuidInterface $uuid)
+    {
+        $decoded = $this->decode($uuid);
+        $encoded = $this->encode($prefix, $decoded);
 
-        return $id;
+        return $uuid->equals($encoded);
     }
 }
