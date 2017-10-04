@@ -68,4 +68,18 @@ class Uuidifier
 
         return hexdec($hex);
     }
+
+    /**
+     * @param string $prefix
+     * @param UuidInterface $uuid
+     *
+     * @return bool
+     */
+    public function isValid($prefix, UuidInterface $uuid)
+    {
+        $decoded = $this->decode($uuid);
+        $encoded = $this->encode($prefix, $decoded);
+
+        return $uuid->equals($encoded);
+    }
 }
