@@ -54,10 +54,11 @@ class Uuidifier
     }
 
     /**
+     * @param string $prefix
      * @param UuidInterface $uuid
      * @return int
      */
-    public function decode(UuidInterface $uuid)
+    public function decode($prefix, UuidInterface $uuid)
     {
         if ($uuid->getVersion() != $this->version) {
             throw new InvalidArgumentException('Can only decode version ' . $this->version . ' uuids');

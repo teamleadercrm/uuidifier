@@ -26,7 +26,7 @@ class UudifierTest extends TestCase
 
         for ($i = 0; $i < 100; $i++) {
             $id = rand(1, 10000000);
-            $decoded = $generator->decode($generator->encode('foo', $id));
+            $decoded = $generator->decode('foo', $generator->encode('foo', $id));
             $this->assertEquals($id, $decoded);
         }
     }
