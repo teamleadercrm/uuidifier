@@ -54,10 +54,11 @@ class UudifierTest extends TestCase
 
     /**
      * @test
-     * This test proves that I can decode 2 different uuid strings to the same integer
      */
-    public function itDecodesUniquely()
+    public function itThrowsAnExceptionWhenDecodingWithADifferentPrefix()
     {
+        $this->expectException(InvalidArgumentException::class);
+
         $generator = new Uuidifier();
         $uuid1 = $generator->encode('foo', 1);
         $uuid2 = Uuid::fromString(rtrim($uuid1, '1') . '2');
@@ -67,7 +68,5 @@ class UudifierTest extends TestCase
 
         $decodedUuid2 = $generator->decode('foo', $uuid2);
         $decodedRealUuid2 = $generator->decode('foo', $realUuid2);
-
-        $this->assertNotEquals($decodedUuid2, $decodedRealUuid2);
     }
 }

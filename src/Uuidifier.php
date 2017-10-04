@@ -67,6 +67,13 @@ class Uuidifier
         $length = hexdec($uuid->getClockSeqLowHex()[0]);
         $hex = substr($uuid->getHex(), 32 - $length, $length);
 
-        return hexdec($hex);
+        $id = hexdec($hex);
+        $encoded = $this->encode($prefix, $id);
+
+        if (!$uuid->equals($encoded)) {
+            throw new InvalidArgumentException('Uuid was encoded with a different prefix');
+        }
+
+        return $id;
     }
 }
