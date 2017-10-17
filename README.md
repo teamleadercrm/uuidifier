@@ -11,12 +11,12 @@ composer require teamleadercrm/uuidifier
 ## Console command
 To do some quick encoding, we have a console command:
 ```
-bin/console uuidifier:encode {prefix} {id}
+php bin/console uuidifier:encode {prefix} {id}
 ```
 
 e.g.
 ```
-bin/console uuidifier:encode InvoiceId 1
+php bin/console uuidifier:encode InvoiceId 1
 ```
 will give you
 ```
