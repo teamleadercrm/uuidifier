@@ -35,8 +35,6 @@ class Encode extends Command
             $prefix,
             $id
         );
-        $output->writeln(
-            "Id $id with prefix $prefix encodes as $uuid"
-        );
+        $output->writeln($uuid);
     }
 }
