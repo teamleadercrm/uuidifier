@@ -35,6 +35,6 @@ class Encode extends Command
             $prefix,
             $id
         );
-        $output->writeln($uuid);
+        $output->writeln((string) $uuid);
     }
 }
