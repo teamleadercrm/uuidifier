@@ -5,22 +5,23 @@ use Ramsey\Uuid\UuidInterface;
 use Teamleader\Uuidifier\Uuidifier;
 use Ramsey\Uuid\Uuid;
 
-class UudifierTest extends TestCase
+class UuidifierTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function itEncodesIds()
+    public function testItEncodesIds()
     {
         $generator = new Uuidifier();
         $uuid = $generator->encode('foo', 1);
         $this->assertInstanceOf(UuidInterface::class, $uuid);
     }
 
-    /**
-     * @test
-     */
-    public function itDecodesUuids()
+    public function testEncodeOnInvalidId()
+    {
+        $this->expectException('InvalidArgumentException');
+        $generator = new Uuidifier();
+        $uuid = $generator->encode('foo', 'invalid_id');
+    }
+
+    public function testItDecodesUuids()
     {
         $generator = new Uuidifier();
 
@@ -31,20 +32,21 @@ class UudifierTest extends TestCase
         }
     }
 
-    /**
-     * @test
-     */
-    public function itEmbedsTheVersion()
+    public function testItDecodeOnInvalidVersion()
+    {
+        $this->expectException('InvalidArgumentException');
+        $generator = new Uuidifier(10000);
+        $generator->decode($generator->encode('foo', 1));
+    }
+
+    public function testItEmbedsTheVersion()
     {
         $generator = new Uuidifier(9);
         $uuid = $generator->encode('foo', 1);
         $this->assertEquals(9, $uuid->getVersion());
     }
 
-    /**
-     * @test
-     */
-    public function itGeneratesDifferentUuidsForDifferentPrefixes()
+    public function testItGeneratesDifferentUuidsForDifferentPrefixes()
     {
         $generator = new Uuidifier();
         $uuid1 = $generator->encode('foo', 1);
@@ -52,30 +54,21 @@ class UudifierTest extends TestCase
         $this->assertNotEquals($uuid1->toString(), $uuid2->toString());
     }
 
-    /**
-     * @test
-     */
-    public function uuidWithCorrectPrefixIsValid()
+    public function testUuidWithCorrectPrefixIsValid()
     {
         $generator = new Uuidifier();
         $uuid = $generator->encode('foo', 1);
         $this->assertTrue($generator->isValid('foo', $uuid));
     }
 
-    /**
-     * @test
-     */
-    public function uuidWithDifferentPrefixIsInvalid()
+    public function testUuidWithDifferentPrefixIsInvalid()
     {
         $generator = new Uuidifier();
         $uuid = $generator->encode('foo', 1);
         $this->assertFalse($generator->isValid('bar', $uuid));
     }
 
-    /**
-     * @test
-     */
-    public function uuidWithDifferentNumberIsInvalid()
+    public function testUuidWithDifferentNumberIsInvalid()
     {
         $generator = new Uuidifier();
         $uuid1 = $generator->encode('foo', 1);
