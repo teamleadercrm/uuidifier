@@ -2,10 +2,12 @@
 
 use Symfony\Component\Console\Application;
 use Teamleader\Uuidifier\Command\Encode;
+use Teamleader\Uuidifier\Command\Decode;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $application = new Application();
 $application->add(new Encode());
+$application->add(new Decode());
 
 $application->run();
