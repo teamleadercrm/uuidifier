@@ -36,5 +36,7 @@ class Encode extends Command
             $id
         );
         $output->writeln((string) $uuid);
+
+        return self::SUCCESS;
     }
 }
