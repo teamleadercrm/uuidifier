@@ -10,6 +10,8 @@ use Teamleader\Uuidifier\Uuidifier;
 
 class Encode extends Command
 {
+    const SUCCESS = 0;
+
     protected function configure()
     {
         $this->setName('uuidifier:encode');
@@ -36,5 +38,7 @@ class Encode extends Command
             $id
         );
         $output->writeln((string) $uuid);
+
+        return self::SUCCESS;
     }
 }

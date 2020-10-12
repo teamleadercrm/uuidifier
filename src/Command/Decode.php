@@ -11,6 +11,8 @@ use Teamleader\Uuidifier\Uuidifier;
 
 class Decode extends Command
 {
+    const SUCCESS = 0;
+
     protected function configure()
     {
         $this->setName('uuidifier:decode');
@@ -28,5 +30,7 @@ class Decode extends Command
         $uuid = $input->getArgument('uuid');
         $int = $uuidifier->decode(Uuid::fromString($uuid));
         $output->writeln($int);
+
+        return self::SUCCESS;
     }
 }
