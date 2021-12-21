@@ -11,8 +11,6 @@ use Teamleader\Uuidifier\Uuidifier;
 
 class Decode extends Command
 {
-    const SUCCESS = 0;
-
     protected function configure()
     {
         $this->setName('uuidifier:decode');
