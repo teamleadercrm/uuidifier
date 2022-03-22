@@ -3,8 +3,7 @@
 namespace Teamleader\Uuidifier;
 
 use InvalidArgumentException;
-use Ramsey\Uuid\BinaryUtils;
-use Ramsey\Uuid\UuidFactory;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 
 class Uuidifier
@@ -38,8 +37,8 @@ class Uuidifier
         $length = strlen($hex);
         $hash = substr($hash, 0, 32 - $length) . $hex;
 
-        $timeHi = BinaryUtils::applyVersion(substr($hash, 12, 4), $this->version);
-        $clockSeqHi = BinaryUtils::applyVariant(hexdec(substr($hash, 16, 2)));
+        $timeHi = $this->applyVersion(substr($hash, 12, 4), $this->version);
+        $clockSeqHi = $this->applyVariant(hexdec(substr($hash, 16, 2)));
 
         $fields = [
             'time_low' => substr($hash, 0, 8),
@@ -50,7 +49,12 @@ class Uuidifier
             'node' => substr($hash, 20, 12),
         ];
 
-        return (new UuidFactory())->uuid($fields);
+        $hex = vsprintf(
+            '%08s-%04s-%04s-%02s%02s-%012s',
+            $fields
+        );
+
+        return Uuid::fromString($hex);
     }
 
     /**
@@ -81,5 +85,37 @@ class Uuidifier
         $encoded = $this->encode($prefix, $decoded);
 
         return $uuid->equals($encoded);
+    }
+
+    /**
+     * Applies the RFC 4122 variant field to the `clock_seq_hi_and_reserved` field
+     *
+     * @param $clockSeqHi
+     * @return int The high field of the clock sequence multiplexed with the variant
+     * @link http://tools.ietf.org/html/rfc4122#section-4.1.1
+     */
+    public static function applyVariant($clockSeqHi)
+    {
+        // Set the variant to RFC 4122
+        $clockSeqHi = $clockSeqHi & 0x3f;
+        $clockSeqHi |= 0x80;
+
+        return $clockSeqHi;
+    }
+
+    /**
+     * Applies the RFC 4122 version number to the `time_hi_and_version` field
+     *
+     * @param string $timeHi
+     * @param integer $version
+     * @return int The high field of the timestamp multiplexed with the version number
+     * @link http://tools.ietf.org/html/rfc4122#section-4.1.3
+     */
+    public static function applyVersion($timeHi, $version)
+    {
+        $timeHi = hexdec($timeHi) & 0x0fff;
+        $timeHi |= $version << 12;
+
+        return $timeHi;
     }
 }
