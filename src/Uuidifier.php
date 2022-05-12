@@ -22,17 +22,8 @@ class Uuidifier
         $this->version = $version;
     }
 
-    /**
-     * @param string $prefix
-     * @param int $id
-     * @return UuidInterface
-     */
-    public function encode($prefix, $id)
+    public function encode(string $prefix, int $id): UuidInterface
     {
-        if (!is_int($id)) {
-            throw new InvalidArgumentException('Can only encode integers');
-        }
-
         $hash = sha1($prefix . $id);
         $hex = dechex($id);
         $length = strlen($hex);
@@ -53,11 +44,7 @@ class Uuidifier
         return (new UuidFactory())->uuid($fields);
     }
 
-    /**
-     * @param UuidInterface $uuid
-     * @return int
-     */
-    public function decode(UuidInterface $uuid)
+    public function decode(UuidInterface $uuid): int
     {
         if ($uuid->getVersion() != $this->version) {
             throw new InvalidArgumentException('Can only decode version ' . $this->version . ' uuids');
@@ -69,13 +56,7 @@ class Uuidifier
         return hexdec($hex);
     }
 
-    /**
-     * @param string $prefix
-     * @param UuidInterface $uuid
-     *
-     * @return bool
-     */
-    public function isValid($prefix, UuidInterface $uuid)
+    public function isValid(string $prefix, UuidInterface $uuid): bool
     {
         $decoded = $this->decode($uuid);
         $encoded = $this->encode($prefix, $decoded);
