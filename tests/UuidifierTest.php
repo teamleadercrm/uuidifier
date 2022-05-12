@@ -5,7 +5,7 @@ use Ramsey\Uuid\UuidInterface;
 use Teamleader\Uuidifier\Uuidifier;
 use Ramsey\Uuid\Uuid;
 
-class UudifierTest extends TestCase
+class UuidifierTest extends TestCase
 {
     /**
      * @test
