@@ -18,14 +18,17 @@ final class VersionZeroFields implements FieldsInterface
     use SerializableFieldsTrait;
     use VariantTrait;
 
+    private string $bytes;
+
     /**
      * @param string $bytes A 16-byte binary string representation of a UUID
      *
      * @throws InvalidArgumentException if the byte string is not exactly 16 bytes
      */
     public function __construct(
-        private string $bytes,
+        string $bytes,
     ) {
+        $this->bytes = $bytes;
         if (strlen($bytes) !== 16) {
             throw new InvalidArgumentException(
                 'The byte string must be 16 bytes long; '

@@ -16,10 +16,15 @@ use Throwable;
 
 final class VersionZeroUuidBuilder implements UuidBuilderInterface
 {
+    private NumberConverterInterface $numberConverter;
+    private TimeConverterInterface $timeConverter;
+
     public function __construct(
-        private NumberConverterInterface $numberConverter,
-        private TimeConverterInterface $timeConverter,
+        NumberConverterInterface $numberConverter,
+        TimeConverterInterface $timeConverter,
     ) {
+        $this->timeConverter = $timeConverter;
+        $this->numberConverter = $numberConverter;
     }
 
     public function build(CodecInterface $codec, string $bytes): UuidInterface
