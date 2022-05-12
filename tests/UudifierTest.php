@@ -36,9 +36,9 @@ class UudifierTest extends TestCase
      */
     public function itEmbedsTheVersion()
     {
-        $generator = new Uuidifier(9);
+        $generator = new Uuidifier();
         $uuid = $generator->encode('foo', 1);
-        $this->assertEquals(9, $uuid->getVersion());
+        $this->assertEquals(0, $uuid->getVersion());
     }
 
     /**

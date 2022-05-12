@@ -9,18 +9,7 @@ use Ramsey\Uuid\UuidInterface;
 
 class Uuidifier
 {
-    /**
-     * @var int
-     */
-    private $version;
-
-    /**
-     * @param int $version
-     */
-    public function __construct($version = 0)
-    {
-        $this->version = $version;
-    }
+    private const VERSION = 0;
 
     public function encode(string $prefix, int $id): UuidInterface
     {
@@ -29,7 +18,7 @@ class Uuidifier
         $length = strlen($hex);
         $hash = substr($hash, 0, 32 - $length) . $hex;
 
-        $timeHi = BinaryUtils::applyVersion(substr($hash, 12, 4), $this->version);
+        $timeHi = BinaryUtils::applyVersion(substr($hash, 12, 4), self::VERSION);
         $clockSeqHi = BinaryUtils::applyVariant(hexdec(substr($hash, 16, 2)));
 
         $fields = [
@@ -46,8 +35,8 @@ class Uuidifier
 
     public function decode(UuidInterface $uuid): int
     {
-        if ($uuid->getVersion() !== $this->version) {
-            throw new InvalidArgumentException('Can only decode version ' . $this->version . ' uuids');
+        if ($uuid->getVersion() !== self::VERSION) {
+            throw new InvalidArgumentException('Can only decode version ' . self::VERSION . ' uuids');
         }
 
         $length = hexdec($uuid->getClockSeqLowHex()[0]);
@@ -58,7 +47,7 @@ class Uuidifier
 
     public function isValid(string $prefix, UuidInterface $uuid): bool
     {
-        if ($uuid->getVersion() !== $this->version) {
+        if ($uuid->getVersion() !== self::VERSION) {
             return false;
         }
 
