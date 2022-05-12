@@ -36,8 +36,12 @@ final class VersionZeroUuidBuilder implements UuidBuilderInterface
                 $codec,
                 $this->timeConverter,
             );
-        } catch (Throwable $e) {
-            throw new UnableToBuildUuidException($e->getMessage(), (int) $e->getCode(), $e);
+        } catch (Throwable $exception) {
+            throw new UnableToBuildUuidException(
+                $exception->getMessage(),
+                (int) $exception->getCode(),
+                $exception,
+            );
         }
     }
 
