@@ -46,7 +46,7 @@ class Uuidifier
 
     public function decode(UuidInterface $uuid): int
     {
-        if ($uuid->getVersion() != $this->version) {
+        if ($uuid->getVersion() !== $this->version) {
             throw new InvalidArgumentException('Can only decode version ' . $this->version . ' uuids');
         }
 
@@ -58,6 +58,10 @@ class Uuidifier
 
     public function isValid(string $prefix, UuidInterface $uuid): bool
     {
+        if ($uuid->getVersion() !== $this->version) {
+            return false;
+        }
+
         $decoded = $this->decode($uuid);
         $encoded = $this->encode($prefix, $decoded);
 
