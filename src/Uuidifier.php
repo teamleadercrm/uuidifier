@@ -34,9 +34,8 @@ class Uuidifier
             'node' => substr($hash, 20, 12),
         ];
 
-        $hex = vsprintf(
-            '%08s-%04s-%04s-%02s%02s-%012s',
-            $fields,
+        $bytes = (string) hex2bin(
+            implode('', $fields),
         );
 
         $uuidFactory = new UuidFactory();
@@ -50,7 +49,7 @@ class Uuidifier
         $uuidFactory->setCodec(new StringCodec($versionZeroUuidBuilder));
         $uuidFactory->setUuidBuilder($versionZeroUuidBuilder);
 
-        return $uuidFactory->fromString($hex);
+        return $uuidFactory->uuid($bytes);
     }
 
     public function decode(UuidInterface $uuid): int
