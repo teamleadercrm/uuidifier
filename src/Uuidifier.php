@@ -3,9 +3,13 @@
 namespace Teamleader\Uuidifier;
 
 use InvalidArgumentException;
-use Ramsey\Uuid\BinaryUtils;
+use Ramsey\Uuid\Codec\StringCodec;
+use Ramsey\Uuid\Converter\Number\GenericNumberConverter;
+use Ramsey\Uuid\Converter\Time\GenericTimeConverter;
+use Ramsey\Uuid\Math\BrickMathCalculator;
 use Ramsey\Uuid\UuidFactory;
 use Ramsey\Uuid\UuidInterface;
+use Teamleader\Uuidifier\Builder\VersionZeroUuidBuilder;
 
 class Uuidifier
 {
@@ -18,8 +22,8 @@ class Uuidifier
         $length = strlen($hex);
         $hash = substr($hash, 0, 32 - $length) . $hex;
 
-        $timeHi = BinaryUtils::applyVersion(substr($hash, 12, 4), self::VERSION);
-        $clockSeqHi = BinaryUtils::applyVariant(hexdec(substr($hash, 16, 2)));
+        $timeHi = $this->applyVersion(substr($hash, 12, 4), self::VERSION);
+        $clockSeqHi = $this->applyVariant(hexdec(substr($hash, 16, 2)));
 
         $fields = [
             'time_low' => substr($hash, 0, 8),
@@ -30,7 +34,23 @@ class Uuidifier
             'node' => substr($hash, 20, 12),
         ];
 
-        return (new UuidFactory())->uuid($fields);
+        $hex = vsprintf(
+            '%08s-%04s-%04s-%02s%02s-%012s',
+            $fields,
+        );
+
+        $uuidFactory = new UuidFactory();
+
+        $calculator = new BrickMathCalculator();
+        $versionZeroUuidBuilder = new VersionZeroUuidBuilder(
+            new GenericNumberConverter($calculator),
+            new GenericTimeConverter($calculator),
+        );
+
+        $uuidFactory->setCodec(new StringCodec($versionZeroUuidBuilder));
+        $uuidFactory->setUuidBuilder($versionZeroUuidBuilder);
+
+        return $uuidFactory->fromString($hex);
     }
 
     public function decode(UuidInterface $uuid): int
@@ -55,5 +75,32 @@ class Uuidifier
         $encoded = $this->encode($prefix, $decoded);
 
         return $uuid->equals($encoded);
+    }
+
+    /**
+     * Applies the RFC 4122 variant field to the `clock_seq_hi_and_reserved` field
+     *
+     * @link http://tools.ietf.org/html/rfc4122#section-4.1.1
+     */
+    private function applyVariant(float|int $clockSeqHi): int
+    {
+        // Set the variant to RFC 4122
+        $clockSeqHi = $clockSeqHi & 0x3f;
+        $clockSeqHi |= 0x80;
+
+        return $clockSeqHi;
+    }
+
+    /**
+     * Applies the RFC 4122 version number to the `time_hi_and_version` field
+     *
+     * @link http://tools.ietf.org/html/rfc4122#section-4.1.3
+     */
+    private function applyVersion(string $timeHi, int $version): int
+    {
+        $timeHi = hexdec($timeHi) & 0x0fff;
+        $timeHi |= $version << 12;
+
+        return $timeHi;
     }
 }
