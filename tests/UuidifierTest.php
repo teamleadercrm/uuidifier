@@ -2,10 +2,11 @@
 
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\UuidInterface;
+use Teamleader\Uuidifier\Nonstandard\UuidV0;
 use Teamleader\Uuidifier\Uuidifier;
 use Ramsey\Uuid\Uuid;
 
-class UudifierTest extends TestCase
+class UuidifierTest extends TestCase
 {
     /**
      * @test
@@ -36,9 +37,9 @@ class UudifierTest extends TestCase
      */
     public function itEmbedsTheVersion()
     {
-        $generator = new Uuidifier(9);
+        $generator = new Uuidifier();
         $uuid = $generator->encode('foo', 1);
-        $this->assertEquals(9, $uuid->getVersion());
+        $this->assertEquals(0, $uuid->getVersion());
     }
 
     /**
@@ -131,7 +132,7 @@ class UudifierTest extends TestCase
     public function decodedIdIsPermanentlyTheSame(string $uuid, int $expectedId)
     {
         $generator = new Uuidifier();
-        $uuid = Uuid::fromString($uuid);
+        $uuid = UuidV0::fromString($uuid);
         $id = $generator->decode($uuid);
 
         $this->assertEquals($expectedId, $id);

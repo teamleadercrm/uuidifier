@@ -3,43 +3,27 @@
 namespace Teamleader\Uuidifier;
 
 use InvalidArgumentException;
-use Ramsey\Uuid\BinaryUtils;
+use Ramsey\Uuid\Codec\StringCodec;
+use Ramsey\Uuid\Converter\Number\GenericNumberConverter;
+use Ramsey\Uuid\Converter\Time\GenericTimeConverter;
+use Ramsey\Uuid\Math\BrickMathCalculator;
 use Ramsey\Uuid\UuidFactory;
 use Ramsey\Uuid\UuidInterface;
+use Teamleader\Uuidifier\Builder\VersionZeroUuidBuilder;
 
 class Uuidifier
 {
-    /**
-     * @var int
-     */
-    private $version;
+    private const VERSION = 0;
 
-    /**
-     * @param int $version
-     */
-    public function __construct($version = 0)
+    public function encode(string $prefix, int $id): UuidInterface
     {
-        $this->version = $version;
-    }
-
-    /**
-     * @param string $prefix
-     * @param int $id
-     * @return UuidInterface
-     */
-    public function encode($prefix, $id)
-    {
-        if (!is_int($id)) {
-            throw new InvalidArgumentException('Can only encode integers');
-        }
-
         $hash = sha1($prefix . $id);
         $hex = dechex($id);
         $length = strlen($hex);
         $hash = substr($hash, 0, 32 - $length) . $hex;
 
-        $timeHi = BinaryUtils::applyVersion(substr($hash, 12, 4), $this->version);
-        $clockSeqHi = BinaryUtils::applyVariant(hexdec(substr($hash, 16, 2)));
+        $timeHi = $this->applyVersion(substr($hash, 12, 4), self::VERSION);
+        $clockSeqHi = $this->applyVariant(hexdec(substr($hash, 16, 2)));
 
         $fields = [
             'time_low' => substr($hash, 0, 8),
@@ -50,17 +34,28 @@ class Uuidifier
             'node' => substr($hash, 20, 12),
         ];
 
-        return (new UuidFactory())->uuid($fields);
+        $bytes = (string) hex2bin(
+            implode('', $fields),
+        );
+
+        $uuidFactory = new UuidFactory();
+
+        $calculator = new BrickMathCalculator();
+        $versionZeroUuidBuilder = new VersionZeroUuidBuilder(
+            new GenericNumberConverter($calculator),
+            new GenericTimeConverter($calculator),
+        );
+
+        $uuidFactory->setCodec(new StringCodec($versionZeroUuidBuilder));
+        $uuidFactory->setUuidBuilder($versionZeroUuidBuilder);
+
+        return $uuidFactory->uuid($bytes);
     }
 
-    /**
-     * @param UuidInterface $uuid
-     * @return int
-     */
-    public function decode(UuidInterface $uuid)
+    public function decode(UuidInterface $uuid): int
     {
-        if ($uuid->getVersion() != $this->version) {
-            throw new InvalidArgumentException('Can only decode version ' . $this->version . ' uuids');
+        if ($uuid->getVersion() !== self::VERSION) {
+            throw new InvalidArgumentException('Can only decode version ' . self::VERSION . ' uuids');
         }
 
         $length = hexdec($uuid->getClockSeqLowHex()[0]);
@@ -69,17 +64,42 @@ class Uuidifier
         return hexdec($hex);
     }
 
-    /**
-     * @param string $prefix
-     * @param UuidInterface $uuid
-     *
-     * @return bool
-     */
-    public function isValid($prefix, UuidInterface $uuid)
+    public function isValid(string $prefix, UuidInterface $uuid): bool
     {
+        if ($uuid->getVersion() !== self::VERSION) {
+            return false;
+        }
+
         $decoded = $this->decode($uuid);
         $encoded = $this->encode($prefix, $decoded);
 
         return $uuid->equals($encoded);
+    }
+
+    /**
+     * Applies the RFC 4122 variant field to the `clock_seq_hi_and_reserved` field
+     *
+     * @link http://tools.ietf.org/html/rfc4122#section-4.1.1
+     */
+    private function applyVariant(float|int $clockSeqHi): int
+    {
+        // Set the variant to RFC 4122
+        $clockSeqHi = $clockSeqHi & 0x3f;
+        $clockSeqHi |= 0x80;
+
+        return $clockSeqHi;
+    }
+
+    /**
+     * Applies the RFC 4122 version number to the `time_hi_and_version` field
+     *
+     * @link http://tools.ietf.org/html/rfc4122#section-4.1.3
+     */
+    private function applyVersion(string $timeHi, int $version): int
+    {
+        $timeHi = hexdec($timeHi) & 0x0fff;
+        $timeHi |= $version << 12;
+
+        return $timeHi;
     }
 }
