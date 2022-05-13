@@ -132,9 +132,33 @@ class UuidifierTest extends TestCase
     public function decodedIdIsPermanentlyTheSame(string $uuid, int $expectedId)
     {
         $generator = new Uuidifier();
-        $uuid = UuidV0::fromString($uuid);
+        $uuid = Uuid::fromString($uuid);
         $id = $generator->decode($uuid);
 
         $this->assertEquals($expectedId, $id);
+    }
+
+    /**
+     * @test
+     */
+    public function testDecodingANonStandardUuidV0Works()
+    {
+        $generator = new Uuidifier();
+        $uuid = UuidV0::fromString('af616ff7-e491-06bc-b62e-b9a8ca12fd2a');
+        $id = $generator->decode($uuid);
+
+        $this->assertEquals(42, $id);
+    }
+
+    /**
+     * @test
+     */
+    public function testDecodingAStandardUuidWorks()
+    {
+        $generator = new Uuidifier();
+        $uuid = Uuid::fromString('af616ff7-e491-06bc-b62e-b9a8ca12fd2a');
+        $id = $generator->decode($uuid);
+
+        $this->assertEquals(42, $id);
     }
 }
