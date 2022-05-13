@@ -103,11 +103,37 @@ class UuidifierTest extends TestCase
      * @test
      * @dataProvider providesPreviouslyGeneratedUuids
      */
-    public function uuidIsPermanentlyTheSame(string $prefix, int $id, string $expectedUuid)
+    public function encodedUuidIsPermanentlyTheSame(string $prefix, int $id, string $expectedUuid)
     {
         $generator = new Uuidifier();
         $uuid = $generator->encode($prefix, $id);
 
         $this->assertEquals($expectedUuid, $uuid->toString());
+    }
+
+    private function providesPreviouslyGeneratedIds(): array
+    {
+        return [
+            ['18a16d45-3076-0ef4-b311-d306c9f6c591', 1],
+            ['aaadd949-77b8-0bf3-b61b-09fc3bbbc9e2', 2],
+            ['fa129605-92c4-00f7-811c-2d4a31ee6523', 3],
+            ['89c76b7f-d66c-04b1-a511-c31d2482ef23', 3],
+            ['c542f2cd-cfd5-0279-941b-2be43ee31c64', 4],
+            ['af616ff7-e491-06bc-b62e-b9a8ca12fd2a', 42],
+            ['28bb05fc-9542-0c26-a384-86ae3b9ac9ff', 999999999],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider providesPreviouslyGeneratedIds
+     */
+    public function decodedIdIsPermanentlyTheSame(string $uuid, int $expectedId)
+    {
+        $generator = new Uuidifier();
+        $uuid = Uuid::fromString($uuid);
+        $id = $generator->decode($uuid);
+
+        $this->assertEquals($expectedId, $id);
     }
 }
