@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\UuidInterface;
+use Teamleader\Uuidifier\Nonstandard\UuidV0;
 use Teamleader\Uuidifier\Uuidifier;
 use Ramsey\Uuid\Uuid;
 
@@ -131,7 +132,7 @@ class UuidifierTest extends TestCase
     public function decodedIdIsPermanentlyTheSame(string $uuid, int $expectedId)
     {
         $generator = new Uuidifier();
-        $uuid = Uuid::fromString($uuid);
+        $uuid = UuidV0::fromString($uuid);
         $id = $generator->decode($uuid);
 
         $this->assertEquals($expectedId, $id);
