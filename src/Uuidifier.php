@@ -10,6 +10,7 @@ use Ramsey\Uuid\Math\BrickMathCalculator;
 use Ramsey\Uuid\UuidFactory;
 use Ramsey\Uuid\UuidInterface;
 use Teamleader\Uuidifier\Builder\VersionZeroUuidBuilder;
+use Teamleader\Uuidifier\Nonstandard\UuidV0;
 
 class Uuidifier
 {
@@ -55,7 +56,7 @@ class Uuidifier
     public function decode(UuidInterface $uuid): int
     {
         if ($uuid->getVersion() !== self::VERSION) {
-            throw new InvalidArgumentException('Can only decode version ' . self::VERSION . ' uuids');
+            $uuid = $this->transformUnknownUuidIntoUuidVersionZero($uuid);
         }
 
         $length = hexdec($uuid->getClockSeqLowHex()[0]);
@@ -67,13 +68,18 @@ class Uuidifier
     public function isValid(string $prefix, UuidInterface $uuid): bool
     {
         if ($uuid->getVersion() !== self::VERSION) {
-            return false;
+            $uuid = $this->transformUnknownUuidIntoUuidVersionZero($uuid);
         }
 
         $decoded = $this->decode($uuid);
         $encoded = $this->encode($prefix, $decoded);
 
         return $uuid->equals($encoded);
+    }
+
+    private function transformUnknownUuidIntoUuidVersionZero(UuidInterface $uuid): UuidInterface
+    {
+        return UuidV0::fromString($uuid->toString());
     }
 
     /**
