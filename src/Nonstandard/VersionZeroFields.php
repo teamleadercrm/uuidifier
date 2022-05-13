@@ -41,6 +41,12 @@ final class VersionZeroFields implements FieldsInterface
                 'The byte string received does not conform to the RFC 4122 variant'
             );
         }
+
+        if (!$this->isCorrectVersion()) {
+            throw new InvalidArgumentException(
+                'The byte string received does not contain a valid version'
+            );
+        }
     }
 
     public function getBytes(): string
@@ -116,5 +122,18 @@ final class VersionZeroFields implements FieldsInterface
         }
 
         return $this->getVariant() === Uuid::RFC_4122;
+    }
+
+    private function isCorrectVersion(): bool
+    {
+        if ($this->isNil()) {
+            return true;
+        }
+
+        if ($this->getVersion() !== 0) {
+            return false;
+        }
+
+        return true;
     }
 }
