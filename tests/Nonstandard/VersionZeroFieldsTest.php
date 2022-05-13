@@ -6,6 +6,9 @@ use Teamleader\Uuidifier\Nonstandard\VersionZeroFields;
 
 class VersionZeroFieldsTest extends TestCase
 {
+    /**
+     * @test
+     */
     public function testConstructorThrowsExceptionIfNotSixteenByteString(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -17,6 +20,7 @@ class VersionZeroFieldsTest extends TestCase
     }
 
     /**
+     * @test
      * @dataProvider nonRfc4122VariantProvider
      */
     public function testConstructorThrowsExceptionIfNotRfc4122Variant(string $uuid): void
@@ -50,6 +54,7 @@ class VersionZeroFieldsTest extends TestCase
     }
 
     /**
+     * @test
      * @dataProvider invalidVersionProvider
      */
     public function testConstructorThrowsExceptionIfInvalidVersion(string $uuid): void
@@ -80,6 +85,7 @@ class VersionZeroFieldsTest extends TestCase
     }
 
     /**
+     * @test
      * @dataProvider fieldGetterMethodProvider
      */
     public function testFieldGetterMethods(string $uuid, string $methodName, mixed $expectedValue): void
@@ -113,6 +119,9 @@ class VersionZeroFieldsTest extends TestCase
         ];
     }
 
+    /**
+     * @test
+     */
     public function testSerializingFields(): void
     {
         $bytes = (string) hex2bin(str_replace('-', '', 'ff6f8cb0-c57d-01e1-8b21-0800200c9a66'));
