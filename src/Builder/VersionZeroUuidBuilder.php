@@ -9,6 +9,7 @@ use Ramsey\Uuid\Codec\CodecInterface;
 use Ramsey\Uuid\Converter\NumberConverterInterface;
 use Ramsey\Uuid\Converter\TimeConverterInterface;
 use Ramsey\Uuid\Exception\UnableToBuildUuidException;
+use Ramsey\Uuid\Exception\UnsupportedOperationException;
 use Ramsey\Uuid\UuidInterface;
 use Teamleader\Uuidifier\Nonstandard\UuidV0;
 use Teamleader\Uuidifier\Nonstandard\VersionZeroFields;
@@ -30,8 +31,16 @@ final class VersionZeroUuidBuilder implements UuidBuilderInterface
     public function build(CodecInterface $codec, string $bytes): UuidInterface
     {
         try {
+            $fields = $this->buildFields($bytes);
+
+            if ($fields->getVersion() !== 0) {
+                throw new UnsupportedOperationException(
+                    'The UUID version in the given fields is not supported by this UUID builder'
+                );
+            }
+
             return new UuidV0(
-                $this->buildFields($bytes),
+                $fields,
                 $this->numberConverter,
                 $codec,
                 $this->timeConverter,
