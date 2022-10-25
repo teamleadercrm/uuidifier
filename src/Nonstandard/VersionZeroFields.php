@@ -10,6 +10,7 @@ use Ramsey\Uuid\Rfc4122\FieldsInterface;
 use Ramsey\Uuid\Rfc4122\MaxTrait;
 use Ramsey\Uuid\Rfc4122\NilTrait;
 use Ramsey\Uuid\Rfc4122\VariantTrait;
+use Ramsey\Uuid\Rfc4122\VersionTrait;
 use Ramsey\Uuid\Type\Hexadecimal;
 use Ramsey\Uuid\Uuid;
 
@@ -19,6 +20,7 @@ final class VersionZeroFields implements FieldsInterface
     use NilTrait;
     use SerializableFieldsTrait;
     use VariantTrait;
+    use VersionTrait;
 
     private string $bytes;
 
