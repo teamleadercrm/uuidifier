@@ -118,7 +118,6 @@ final class VersionZeroFields implements FieldsInterface
         return (int) $parts[4] >> 12;
     }
 
-
     private function isCorrectVariant(): bool
     {
         if ($this->isMax() || $this->isNil()) {
