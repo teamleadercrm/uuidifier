@@ -7,16 +7,20 @@ namespace Teamleader\Uuidifier\Nonstandard;
 use Ramsey\Uuid\Exception\InvalidArgumentException;
 use Ramsey\Uuid\Fields\SerializableFieldsTrait;
 use Ramsey\Uuid\Rfc4122\FieldsInterface;
+use Ramsey\Uuid\Rfc4122\MaxTrait;
 use Ramsey\Uuid\Rfc4122\NilTrait;
 use Ramsey\Uuid\Rfc4122\VariantTrait;
+use Ramsey\Uuid\Rfc4122\VersionTrait;
 use Ramsey\Uuid\Type\Hexadecimal;
 use Ramsey\Uuid\Uuid;
 
 final class VersionZeroFields implements FieldsInterface
 {
+    use MaxTrait;
     use NilTrait;
     use SerializableFieldsTrait;
     use VariantTrait;
+    use VersionTrait;
 
     private string $bytes;
 
@@ -105,7 +109,7 @@ final class VersionZeroFields implements FieldsInterface
 
     public function getVersion(): ?int
     {
-        if ($this->isNil()) {
+        if ($this->isMax() || $this->isNil()) {
             return null;
         }
 
@@ -114,10 +118,9 @@ final class VersionZeroFields implements FieldsInterface
         return (int) $parts[4] >> 12;
     }
 
-
     private function isCorrectVariant(): bool
     {
-        if ($this->isNil()) {
+        if ($this->isMax() || $this->isNil()) {
             return true;
         }
 
@@ -126,7 +129,7 @@ final class VersionZeroFields implements FieldsInterface
 
     private function isCorrectVersion(): bool
     {
-        if ($this->isNil()) {
+        if ($this->isMax() || $this->isNil()) {
             return true;
         }
 
