@@ -1,7 +1,7 @@
 {
     "name": "teamleadercrm/uuidifier",
     "require": {
-        "ramsey/uuid": ">=4.2 <4.6",
+        "ramsey/uuid": ">=4.5 <4.6",
         "symfony/console": "^3.1|^4.0|^5.0|^6.0"
     },
     "autoload": {
