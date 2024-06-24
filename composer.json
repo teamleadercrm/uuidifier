@@ -1,6 +1,7 @@
 {
     "name": "teamleadercrm/uuidifier",
     "require": {
+        "php": "^8.1",
         "ramsey/uuid": ">=4.5 <4.6",
         "symfony/console": "^3.1|^4.0|^5.0|^6.0"
     },
