@@ -53,6 +53,9 @@ class Uuidifier
         return $uuidFactory->uuid($bytes);
     }
 
+    /**
+     * @throws UuidExceptionInterface
+     */
     public function decode(UuidInterface $uuid): int
     {
         if ($uuid->getVersion() !== self::VERSION) {
