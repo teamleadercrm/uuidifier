@@ -2,10 +2,10 @@
 
 namespace Teamleader\Uuidifier;
 
-use InvalidArgumentException;
 use Ramsey\Uuid\Codec\StringCodec;
 use Ramsey\Uuid\Converter\Number\GenericNumberConverter;
 use Ramsey\Uuid\Converter\Time\GenericTimeConverter;
+use Ramsey\Uuid\Exception\UuidExceptionInterface;
 use Ramsey\Uuid\Math\BrickMathCalculator;
 use Ramsey\Uuid\UuidFactory;
 use Ramsey\Uuid\UuidInterface;
@@ -77,6 +77,9 @@ class Uuidifier
         return $uuid->equals($encoded);
     }
 
+    /**
+     * @throws UuidExceptionInterface
+     */
     private function transformUnknownUuidIntoUuidVersionZero(UuidInterface $uuid): UuidInterface
     {
         return UuidV0::fromString($uuid->toString());
