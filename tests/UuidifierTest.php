@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\UuidInterface;
 use Teamleader\Uuidifier\Nonstandard\UuidV0;
@@ -71,6 +72,18 @@ class UuidifierTest extends TestCase
         $generator = new Uuidifier();
         $uuid = $generator->encode('foo', 1);
         $this->assertFalse($generator->isValid('bar', $uuid));
+    }
+
+    /**
+     * @test
+     */
+    public function uuidWithInvalidVersionIsInvalid(): void
+    {
+        $generator = new Uuidifier();
+
+        $uuid = Uuid::fromString('018dc552-ce8c-77ad-8c27-289ac479d815'); // V7 UUID
+
+        Assert::assertFalse($generator->isValid('foo', $uuid));
     }
 
     /**

@@ -2,10 +2,10 @@
 
 namespace Teamleader\Uuidifier;
 
-use InvalidArgumentException;
 use Ramsey\Uuid\Codec\StringCodec;
 use Ramsey\Uuid\Converter\Number\GenericNumberConverter;
 use Ramsey\Uuid\Converter\Time\GenericTimeConverter;
+use Ramsey\Uuid\Exception\UuidExceptionInterface;
 use Ramsey\Uuid\Math\BrickMathCalculator;
 use Ramsey\Uuid\UuidFactory;
 use Ramsey\Uuid\UuidInterface;
@@ -53,6 +53,9 @@ class Uuidifier
         return $uuidFactory->uuid($bytes);
     }
 
+    /**
+     * @throws UuidExceptionInterface
+     */
     public function decode(UuidInterface $uuid): int
     {
         if ($uuid->getVersion() !== self::VERSION) {
@@ -68,7 +71,11 @@ class Uuidifier
     public function isValid(string $prefix, UuidInterface $uuid): bool
     {
         if ($uuid->getVersion() !== self::VERSION) {
-            $uuid = $this->transformUnknownUuidIntoUuidVersionZero($uuid);
+            try {
+                $uuid = $this->transformUnknownUuidIntoUuidVersionZero($uuid);
+            } catch (UuidExceptionInterface) {
+                return false;
+            }
         }
 
         $decoded = $this->decode($uuid);
@@ -77,6 +84,9 @@ class Uuidifier
         return $uuid->equals($encoded);
     }
 
+    /**
+     * @throws UuidExceptionInterface
+     */
     private function transformUnknownUuidIntoUuidVersionZero(UuidInterface $uuid): UuidInterface
     {
         return UuidV0::fromString($uuid->toString());
