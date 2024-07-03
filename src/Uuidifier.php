@@ -68,7 +68,11 @@ class Uuidifier
     public function isValid(string $prefix, UuidInterface $uuid): bool
     {
         if ($uuid->getVersion() !== self::VERSION) {
-            $uuid = $this->transformUnknownUuidIntoUuidVersionZero($uuid);
+            try {
+                $uuid = $this->transformUnknownUuidIntoUuidVersionZero($uuid);
+            } catch (UuidExceptionInterface) {
+                return false;
+            }
         }
 
         $decoded = $this->decode($uuid);
