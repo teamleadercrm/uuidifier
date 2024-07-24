@@ -3,7 +3,7 @@
     "version": "1.9.1",
     "require": {
         "php": "^8.1",
-        "ramsey/uuid": ">=4.5 <4.6",
+        "ramsey/uuid": ">=4.5 <4.8",
         "symfony/console": "^6.0|^7.0"
     },
     "autoload": {
