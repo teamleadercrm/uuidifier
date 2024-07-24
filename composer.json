@@ -1,6 +1,6 @@
 {
     "name": "teamleadercrm/uuidifier",
-    "version": "1.9.1",
+    "version": "1.10.0",
     "require": {
         "php": "^8.1",
         "ramsey/uuid": ">=4.5 <4.8",
